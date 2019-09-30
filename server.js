@@ -59,7 +59,7 @@ App.get('/', function(req, res){
 
 App.post('/create-item', function(req, res){
     db.collection('items').insertOne({ text: req.body.item }, function(){
-        res.send('Thankyou for submitting the form..')
+        res.redirect('/')
     })
 })
 

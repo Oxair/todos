@@ -8,6 +8,12 @@ function itemTemplate(item){
   </li>`
 }
 
+// Page load Render
+let HTML = items.map(function(item){
+  return itemTemplate(item)
+}).join('')
+document.getElementById("item-list").insertAdjacentHTML("beforeend", HTML)
+
 // Create
 let createField = document.getElementById("create-field")
 

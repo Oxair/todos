@@ -1,5 +1,6 @@
 let express = require('express')
 let mongodb = require('mongodb')
+let sanitizeHTML = require('sanitize-html')
 
 let app = express()
 let db
@@ -17,6 +18,19 @@ mongodb.connect(connectionString, { useNewUrlParser: true }, function(err, clien
   app.use(express.json())
   app.use(express.urlencoded({extended: false}))
   
+  function passwordProtected(req, res, next){
+    res.set('WWW-Authenticate', "Basic realm='Todos Application'")
+    //console.log(req.headers.authorization)
+    if(req.headers.authorization == "Basic dGVzdDp0ZXN0"){
+      next()
+    } else {
+      res.status(401).send("Authorization required")
+    }
+  }
+
+  // Using for all routes
+  app.use(passwordProtected)
+
   app.get('/', function(req, res) {
     db.collection('items').find().toArray(function(err, items) {
       res.send(`<!DOCTYPE html>
@@ -57,13 +71,15 @@ mongodb.connect(connectionString, { useNewUrlParser: true }, function(err, clien
   })
   
   app.post('/create-item', function(req, res) {
-    db.collection('items').insertOne({text: req.body.text}, function(err, info) {
+    let security = sanitizeHTML(req.body.text, {allowedTags: [], allowedAttributes: {}})
+    db.collection('items').insertOne({text: security}, function(err, info) {
       res.json(info.ops[0])
     })
   })
   
   app.post('/update-item', function(req, res) {
-    db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: req.body.text}}, function() {
+    let security = sanitizeHTML(req.body.text, {allowedTags: [], allowedAttributes: {}})
+    db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: security}}, function() {
       res.send("Success")
     })
   })

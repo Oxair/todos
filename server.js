@@ -11,7 +11,7 @@ if (port == null || port == ""){
 
 app.use(express.static('public'))
 
-let connectionString = 'mongodb+srv://todoapplicationuser:123..321@cluster0-bnazp.mongodb.net/TodoApp?retryWrites=true&w=majority'
+let connectionString = 'mongodb+srv://username:password@cluster0-bnazp.mongodb.net/TodoApp?retryWrites=true&w=majority'
 
 mongodb.connect(connectionString, { useNewUrlParser: true }, function(err, client){
 
